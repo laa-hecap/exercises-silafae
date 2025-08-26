@@ -1,6 +1,6 @@
 // For format details, see https://aka.ms/devcontainer.json.
 {
-  "name": "Verba and Ollama Cloud Environment",
+  "name": "Verba and Ollama Automated Environment",
   "image": "mcr.microsoft.com/devcontainers/python:3.10-bullseye",
 
   // This "feature" automatically installs and configures the Ollama service.
@@ -8,9 +8,8 @@
     "ghcr.io/prulloac/devcontainer-features/ollama:1": {}
   },
 
-  // This command runs after the container is created.
-  // It pre-downloads a set of models so they are ready to use immediately.
-  "postCreateCommand": "for model in mistral llama3 gemma2:2b; do ollama pull $model; done",
+  // This single command runs after the container is created to perform all setup steps.
+  "postCreateCommand": "git clone https://github.com/weaviate/Verba.git && echo -e 'OLLAMA_URL=http://localhost:11434\nOLLAMA_MODEL=llama3\nOLLAMA_EMBED_MODEL=snowflake-arctic-embed' > Verba/.env && cd Verba && pip install -r requirements.txt && (for model in mistral llama3 gemma2:2b snowflake-arctic-embed; do ollama pull $model; done)",
 
   // Specifies the minimum resources required for this Codespace to run smoothly.
   "hostRequirements": {
