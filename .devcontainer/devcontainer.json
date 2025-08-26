@@ -1,15 +1,30 @@
 // For format details, see https://aka.ms/devcontainer.json.
 {
-  "name": "Ollama",
-  "image": "mcr.microsoft.com/devcontainers/python:3.12-bullseye",
+  "name": "Verba and Ollama Cloud Environment",
+  "image": "mcr.microsoft.com/devcontainers/python:3.10-bullseye",
+
+  // This "feature" automatically installs and configures the Ollama service.
   "features": {
     "ghcr.io/prulloac/devcontainer-features/ollama:1": {}
   },
 
-  // This command installs requests before pulling the models.
-  "postCreateCommand": "pip install requests && for model in mistral llama3.2 gemma2:2b deepseek-r1:1.5b; do ollama pull $model; done",
+  // This command runs after the container is created.
+  // It pre-downloads a set of models so they are ready to use immediately.
+  "postCreateCommand": "for model in mistral llama3 gemma2:2b; do ollama pull $model; done",
 
+  // Specifies the minimum resources required for this Codespace to run smoothly.
   "hostRequirements": {
     "memory": "16gb"
+  },
+
+  // Forward the necessary ports and give them descriptive labels.
+  "forwardPorts": [8501, 8000],
+  "portsAttributes": {
+    "8501": {
+      "label": "Verba Frontend (UI)"
+    },
+    "8000": {
+      "label": "Verba Backend (API)"
+    }
   }
 }
