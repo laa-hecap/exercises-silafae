@@ -1,6 +1,4 @@
-# merida-june-6-2024
-
-esto es un reame file.
+# CodeSpaces and Data Analysis exercises
 
 ## Datos para el ejercicio
 https://companiesmarketcap.com/
