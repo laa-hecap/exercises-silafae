@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+  workspace:
+    image: rootproject/root:latest
+    user: root
+    init: true
+    volumes:
+      - ..:/workspace:cached
+    # This ensures the ollama service starts before your workspace
+    depends_on:
+      - ollama
+
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    # This volume is CRITICAL: it saves your downloaded models so you don't lose them
+    volumes:
+      - ollama_data:/root/.ollama
+
+volumes:
+  ollama_data:

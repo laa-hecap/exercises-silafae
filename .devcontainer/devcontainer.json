@@ -1,21 +1,14 @@
 {
-  "name": "ATLAS ROOT Analysis Environment",
-
-  // Use the exact same Docker image as your GitHub Action
-  "image": "rootproject/root:latest",
-
-  // Ensure the user and workspace path match your Action's setup
-  "remoteUser": "root",
+  "name": "ROOT + Ollama Environment",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "workspace",
   "workspaceFolder": "/workspace",
-  "mounts": [
-    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
-  ],
-
-  // This command runs once to install all necessary tools inside the container.
-  // It installs system packages like pip and jq, then Python libraries like uproot.
-  "postCreateCommand": "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3-pip git-lfs jq make g++ && rm -rf /var/lib/apt/lists/* && python3 -m pip install --no-cache-dir numpy matplotlib uproot",
-
-  // Optional: Add useful VS Code extensions for your environment
+  "forwardPorts": [11434],
+  "containerEnv": {
+    "OLLAMA_HOST": "http://ollama:11434"
+  },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postStartCommand": "bash .devcontainer/post-start.sh",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -27,5 +20,8 @@
         "python.defaultInterpreterPath": "/usr/bin/python3"
       }
     }
+  },
+  "hostRequirements": {
+    "memory": "16gb"
   }
 }
