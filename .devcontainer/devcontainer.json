@@ -1,15 +1,35 @@
 // For format details, see https://aka.ms/devcontainer.json.
 {
-  "name": "Ollama",
-  "image": "mcr.microsoft.com/devcontainers/python:3.12-bullseye",
+  "name": "ROOT + Ollama (same as CI)",
+  "image": "rootproject/root:latest",
+
+  // Install Ollama in this same container (no docker-compose needed)
   "features": {
     "ghcr.io/prulloac/devcontainer-features/ollama:1": {}
   },
 
-  // This command installs requests before pulling the models.
-  "postCreateCommand": "pip install requests && for model in mistral llama3.2 gemma2:2b deepseek-r1:1.5b; do ollama pull $model; done",
+  "remoteUser": "root",
 
-  "hostRequirements": {
-    "memory": "16gb"
-  }
+  // Use /workspace so paths match your GitHub Action (which bind-mounts to /workspace)
+  "workspaceFolder": "/workspace",
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+  ],
+
+  "forwardPorts": [11434],
+  "containerEnv": {
+    "OLLAMA_HOST": "http://localhost:11434"
+  },
+
+  // Set up Python bits you use + pull a few demo models
+  "postCreateCommand": "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3-pip git-lfs jq make g++ curl && rm -rf /var/lib/apt/lists/* && git lfs install && python3 -m pip install --no-cache-dir numpy matplotlib uproot requests && for model in mistral llama3.2 gemma2:2b deepseek-r1:1.5b; do ollama pull $model || true; done",
+
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python", "ms-toolsai.jupyter", "eamodio.gitlens"],
+      "settings": { "python.defaultInterpreterPath": "/usr/bin/python3" }
+    }
+  },
+
+  "hostRequirements": { "memory": "16gb" }
 }
