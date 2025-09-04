@@ -1,13 +1,22 @@
 {
-  "name": "ROOT Analysis Environment",
+  "name": "ROOT + Ollama",
   "image": "rootproject/root:latest",
-
   "remoteUser": "root",
   "workspaceFolder": "/workspace",
-  "mounts": [
-    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
-  ],
 
-  // This single line installs all required tools. No extra files needed.
-  "postCreateCommand": "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3-pip git-lfs jq make g++ && rm -rf /var/lib/apt/lists/* && python3 -m pip install --no-cache-dir numpy matplotlib uproot"
+  "forwardPorts": [11434],
+  "containerEnv": {
+    "OLLAMA_HOST": "http://127.0.0.1:11434"
+  },
+
+  "postCreateCommand": "bash -lc 'apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends curl git-lfs jq make g++ python3-pip && rm -rf /var/lib/apt/lists/* && git lfs install && python3 -m pip install --no-cache-dir numpy matplotlib uproot requests && curl -fsSL https://ollama.com/install.sh | sh'",
+
+  "postStartCommand": "bash -lc 'pgrep -x ollama >/dev/null 2>&1 || (nohup ollama serve > /var/log/ollama.log 2>&1 & sleep 3)'",
+
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python", "ms-toolsai.jupyter", "eamodio.gitlens"],
+      "settings": { "python.defaultInterpreterPath": "/usr/bin/python3" }
+    }
+  }
 }
